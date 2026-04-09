@@ -3545,6 +3545,8 @@ end
 
 getgenv().library = library
 
+return library
+
 --local cmb = library:addTab("Combat")
 --local slt = cmb:createGroup('left', 'Aimbot')
 --local visual = cmb:createGroup('center', 'Visual')
