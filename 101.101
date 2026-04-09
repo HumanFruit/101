@@ -487,6 +487,7 @@ function library:notify(text)
 end
 
 function library:updateLibColor(newColor)
+     if not newColor then return end
     library.libColor = newColor
     for _, element in ipairs(library.libColorElements) do
         if element and element.Parent then
