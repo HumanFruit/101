@@ -3443,7 +3443,7 @@ library.addKeybindToWindow = library.addKeybindToWindow
 library.updateKeybindInWindow = library.updateKeybindInWindow
 library.removeKeybindFromWindow = library.removeKeybindFromWindow
 
-local function CreateConfigTab()
+function CreateConfigTab()
     
 local configTab = library:addTab("Settings")
 local createconfigs = configTab:createGroup('left', 'Create Configs')
@@ -3540,6 +3540,7 @@ othersettings:addButton({
 library:refreshConfigs()
 
 end
+library.CreateConfigTab = CreateConfigTab
 
 getgenv().library = library
 
