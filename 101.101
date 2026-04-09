@@ -3539,6 +3539,8 @@ othersettings:addButton({
 
 library:refreshConfigs()
 
+library.CreateConfigTab = CreateConfigTab
+
 end
 
 getgenv().library = library
