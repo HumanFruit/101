@@ -487,7 +487,6 @@ function library:notify(text)
 end
 
 function library:updateLibColor(newColor)
-     if not newColor then return end
     library.libColor = newColor
     for _, element in ipairs(library.libColorElements) do
         if element and element.Parent then
@@ -3367,7 +3366,7 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-function library:refreshKeybindsWindow()
+function library:refreshKeybindsWindow(noTween)
     for _, child in ipairs(bgList:GetChildren()) do
         if child:IsA("TextLabel") and child.Name ~= "pre" then
             child:Destroy()
@@ -3388,11 +3387,17 @@ function library:refreshKeybindsWindow()
             ke.BorderColor3 = Color3.fromRGB(0, 0, 0)
             ke.Text = kb.text
             ke.TextXAlignment = Enum.TextXAlignment.Center
-            ke.TextTransparency = 1
+            if noTween then
+                ke.TextTransparency = 0
+            else
+                ke.TextTransparency = 1
+            end
             ke.Parent = bgList
-            library:Tween(ke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                TextTransparency = 0
-            })
+            if not noTween then
+                library:Tween(ke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    TextTransparency = 0
+                })
+            end
             count = count + 1
         end
     end
@@ -3444,7 +3449,7 @@ library.addKeybindToWindow = library.addKeybindToWindow
 library.updateKeybindInWindow = library.updateKeybindInWindow
 library.removeKeybindFromWindow = library.removeKeybindFromWindow
 
-function library:CreateConfigTab()
+function CreateConfigTab()
     
 local configTab = library:addTab("Settings")
 local createconfigs = configTab:createGroup('left', 'Create Configs')
@@ -3540,71 +3545,7 @@ othersettings:addButton({
 
 library:refreshConfigs()
 
+end
 library.CreateConfigTab = CreateConfigTab
 
-end
-
 getgenv().library = library
-
-return library
-
---local cmb = library:addTab("Combat")
---local slt = cmb:createGroup('left', 'Aimbot')
---local visual = cmb:createGroup('center', 'Visual')
---local gnmd = cmb:createGroup('right', 'Modifications')
-
---slt:addToggle({
-  --  text = "Silent Aim",
-  --  flag = "Silent_Aim",
-  --  keybind = false,
-  --  state = false,
-  --  callback = function(v)
-  --  end
---})
-
---visual:addToggle({
-   -- text = "Fov Circle",
- --   flag = "fov_circle",
- --   keybind = false,
---    state = false,
---    callback = function(v)
---    end
---}):addDoubleColorpicker({
- --   text1 = "First Color",
- --   flag1 = "primary_fcolor",
- --   color1 = Color3.new(1,1,1),
-  --  callback1 = function(v)
- --       print(v)
-  --  end,
-  --  text2 = "Second Color",
-  --  flag2 = "secondary_fcolor",
-  --  color2 = Color3.new(1,0,0),
-  --  callback2 = function(v)
-  --      print(v)
-  --  end
---})
---visual:addSlider({
- --   text = "AimBot Fov",
- --   flag = "aim_fov",
- --  min = 1,
- --   max = 180,
-  --  increment = 1,
- --   value = 1,
- --   callback = function(v)
---        print(v)
- --  end
---})
-
---gnmd:addSlider({
-  --  text = "RMP",
-   -- flag = "rapid_mult",
-   -- min = 1,
-   -- max = 10,
-   -- increment = 0.1,
-   -- value = 1,
-   -- callback = function(v)
-    --    print("How much niggers:", v)
-  --  end
---})
-
--- CreateConfigTab()
