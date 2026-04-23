@@ -47,6 +47,20 @@ local library = {
     configBoxSelectedText = nil;
 }
 
+if game.GameId == 4777055365 then
+    library.gamename = "rost"
+end
+
+if not isfolder(library.cheatname) then
+    makefolder(library.cheatname)
+end
+if not isfolder(library.cheatname .. "/" .. library.gamename) then
+    makefolder(library.cheatname .. "/" .. library.gamename)
+end
+if not isfolder(library.cheatname .. "/" .. library.gamename .. "/configs") then
+    makefolder(library.cheatname .. "/" .. library.gamename .. "/configs")
+end
+
 local menu = Instance.new("ScreenGui")
 menu.Name = "HkbLbWscRa7b7jogdSlb"
 menu.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -1230,7 +1244,6 @@ end
                 hue.MouseMoved:connect(function(_, y)
                     hueY = y
                 end)
-
                 picker.MouseMoved:connect(function(x, y)
                     pickerX,pickerY = x,y
                 end)
@@ -3046,11 +3059,11 @@ function library:saveConfig()
         end
     end
     
-    if not isfolder(library.cheatname) then
-        makefolder(library.cheatname)
+    if not isfolder(library.cheatname .. "/" .. library.gamename) then
+        makefolder(library.cheatname .. "/" .. library.gamename)
     end
     
-    local filePath = library.cheatname .. "/" .. name .. ".cfg"
+    local filePath = library.cheatname .. "/" .. library.gamename .. "/configs/" .. name .. ".cfg"
     writefile(filePath, game:GetService("HttpService"):JSONEncode(jig))
     library:notify("Successfully updated config " .. name .. ".cfg!")
     library:refreshConfigs()
@@ -3064,13 +3077,44 @@ function library:loadConfig()
         return
     end
     
-    local filePath = library.cheatname .. "/" .. name .. ".cfg"
+    local filePath = library.cheatname .. "/" .. library.gamename .. "/configs/" .. name .. ".cfg"
     if not isfile(filePath) then
         library:notify("Config file " .. name .. ".cfg not found!")
         return
     end
     
     local config = game:GetService("HttpService"):JSONDecode(readfile(filePath))
+    
+    for i, v in next, library.options do
+        if not v.skipflag and v.oldargs then
+            spawn(function()
+                pcall(function()
+                    if v.type == "toggle" then
+                        v.changeState(v.oldargs.state or false)
+                    elseif v.type == "slider" then
+                        v.changeState(v.oldargs.value or 0)
+                    elseif v.type == "textbox" then
+                        v.changeState(v.oldargs.value or "")
+                    elseif v.type == "colorpicker" then
+                        v.changeState(v.oldargs.color or Color3.new(1,1,1))
+                    elseif v.type == "list" then
+                        if v.oldargs.multiselect then
+                            v.changeState(v.oldargs.value or {})
+                        else
+                            v.changeState(v.oldargs.value or v.oldargs.values[1])
+                        end
+                    elseif v.type == "keybind" then
+                        if v.oldargs.key then
+                            v.changeState(v.oldargs.key)
+                        end
+                    end
+                end)
+            end)
+        end
+    end
+    
+    wait(0.1)
+    
     for i, v in next, library.options do
         spawn(function()
             pcall(function()
@@ -3099,7 +3143,7 @@ function library:deleteConfig()
         return
     end
     
-    local filePath = library.cheatname .. "/" .. name .. ".cfg"
+    local filePath = library.cheatname .. "/" .. library.gamename .. "/configs/" .. name .. ".cfg"
     if isfile(filePath) then
         delfile(filePath)
         library:refreshConfigs()
@@ -3112,8 +3156,8 @@ end
 function library:refreshConfigs()
     local tbl = {}
     
-    if isfolder(library.cheatname) then
-        for i, v in next, listfiles(library.cheatname) do
+    if isfolder(library.cheatname .. "/" .. library.gamename .. "/configs") then
+        for i, v in next, listfiles(library.cheatname .. "/" .. library.gamename .. "/configs") do
             local fileName = string.match(v, "([^/\\]+)%.cfg$")
             if fileName then
                 table.insert(tbl, fileName)
@@ -3155,11 +3199,11 @@ function library:createConfig()
         end
     end
     
-    if not isfolder(library.cheatname) then
-        makefolder(library.cheatname)
+    if not isfolder(library.cheatname .. "/" .. library.gamename) then
+        makefolder(library.cheatname .. "/" .. library.gamename)
     end
     
-    writefile(library.cheatname .. "/" .. name .. ".cfg", game:GetService("HttpService"):JSONEncode(jig))
+    writefile(library.cheatname .. "/" .. library.gamename .. "/configs/" .. name .. ".cfg", game:GetService("HttpService"):JSONEncode(jig))
     library:notify("Successfully created config " .. name .. ".cfg!")
     library:refreshConfigs()
 end
@@ -3547,64 +3591,3 @@ end
 getgenv().library = library
 
 return library
-
---local cmb = library:addTab("Combat")
---local slt = cmb:createGroup('left', 'Aimbot')
---local visual = cmb:createGroup('center', 'Visual')
---local gnmd = cmb:createGroup('right', 'Modifications')
-
---slt:addToggle({
-  --  text = "Silent Aim",
-  --  flag = "Silent_Aim",
-  --  keybind = false,
-  --  state = false,
-  --  callback = function(v)
-  --  end
---})
-
---visual:addToggle({
-   -- text = "Fov Circle",
- --   flag = "fov_circle",
- --   keybind = false,
---    state = false,
---    callback = function(v)
---    end
---}):addDoubleColorpicker({
- --   text1 = "First Color",
- --   flag1 = "primary_fcolor",
- --   color1 = Color3.new(1,1,1),
-  --  callback1 = function(v)
- --       print(v)
-  --  end,
-  --  text2 = "Second Color",
-  --  flag2 = "secondary_fcolor",
-  --  color2 = Color3.new(1,0,0),
-  --  callback2 = function(v)
-  --      print(v)
-  --  end
---})
---visual:addSlider({
- --   text = "AimBot Fov",
- --   flag = "aim_fov",
- --  min = 1,
- --   max = 180,
-  --  increment = 1,
- --   value = 1,
- --   callback = function(v)
---        print(v)
- --  end
---})
-
---gnmd:addSlider({
-  --  text = "RMP",
-   -- flag = "rapid_mult",
-   -- min = 1,
-   -- max = 10,
-   -- increment = 0.1,
-   -- value = 1,
-   -- callback = function(v)
-    --    print("How much niggers:", v)
-  --  end
---})
-
--- CreateConfigTab()
