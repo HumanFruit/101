@@ -1,7 +1,7 @@
 local star = ({...})[1] or {}
 
 if getgenv().library ~= nil then
-    game.Players.LocalPlayer:Kick("Detection -1");
+    game.Players.LocalPlayer:Kick("Detection -1")
 end
 
 if not game:IsLoaded() then
@@ -1683,29 +1683,27 @@ function group:addSlider(args, sub)
 
     local function updateScroll()
         if scrolling or library.scrolling or not newTab.Visible or library.colorpicking then return end
-        
+        local barWidth = 191
+        local startMouseX = mouse.X
+        local startValue = library.flags[args.flag] or args.value or 0
         while inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) and menu.Enabled do 
             runService.RenderStepped:Wait()
             library.scrolling = true
             valuetext.TextColor3 = Color3.fromRGB(255,255,255)
             scrolling = true
-            
-            local rawValue = args.min + ((mouse.X - button.AbsolutePosition.X) / button.AbsoluteSize.X) * (args.max - args.min)
-            
+            local deltaX = mouse.X - startMouseX
+            local percent = deltaX / barWidth
+            local rawValue = startValue + percent * (args.max - args.min)
             local stepped = math.floor((rawValue - args.min) / increment + 0.5) * increment + args.min
             local value = math.max(args.min, math.min(args.max, stepped))
-            
             updateValue(value)
         end
-        
         if scrolling and not entered then
             valuetext.TextColor3 = Color3.fromRGB(255,255,255)
         end
-        
         if not menu.Enabled then
             entered = false
         end
-        
         scrolling = false
         library.scrolling = false
     end
