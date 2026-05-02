@@ -1639,7 +1639,6 @@ function group:addSlider(args, sub)
 
     local entered = false
     local scrolling = false
-    local amount = 0
     local increment = args.increment or 1
 
     local function getPrecision(inc)
