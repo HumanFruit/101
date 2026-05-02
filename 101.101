@@ -1662,11 +1662,7 @@ function group:addSlider(args, sub)
             v = math.floor(v * mult + 0.5) / mult
         end
         
-        if v ~= 0 then
-            fill:TweenSize(UDim2.new(v/args.max, 0, 1, 0), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.01)
-        else
-            fill:TweenSize(UDim2.new(0, 1, 1, 0), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.01)
-        end
+        fill.Size = UDim2.new(v/args.max, 0, 1, 0)
         
         if precision > 0 then
             valuetext.Text = string.format("%." .. precision .. "f", v) .. (sub or "")
