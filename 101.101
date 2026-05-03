@@ -1676,16 +1676,41 @@ function group:addSlider(args, sub)
         end
     end
 
-    local function updateScroll()
-        if scrolling or library.scrolling or not newTab.Visible or library.colorpicking then return end
-        local barWidth = 191
-        local startMouseX = inputService:GetMouseLocation().X
+    local function tryGetAbsolutePosX(btn)
+        local success, result = pcall(function() return btn.AbsolutePosition.X end)
+        return success and result
+    end
+
+    local barWidth = 191
+
+    button.MouseButton1Down:Connect(function()
+        if library.colorpicking then return end
+
+        local mouseX = inputService:GetMouseLocation().X
+        local absoluteX = tryGetAbsolutePosX(button)
+        if absoluteX then
+            local percent = (mouseX - absoluteX) / barWidth
+            local rawValue = args.min + percent * (args.max - args.min)
+            local stepped = math.floor((rawValue - args.min) / increment + 0.5) * increment + args.min
+            local value = math.max(args.min, math.min(args.max, stepped))
+            updateValue(value)
+        end
+
+        scrolling = true
+        main.BorderColor3 = library.libColor
+
+        local startMouseX = mouseX
         local startValue = library.flags[args.flag] or args.value or 0
-        while inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) and menu.Enabled do 
+
+        while scrolling and menu.Enabled do
             runService.RenderStepped:Wait()
+            if not inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+                scrolling = false
+                break
+            end
             library.scrolling = true
             valuetext.TextColor3 = Color3.fromRGB(255,255,255)
-            scrolling = true
+
             local deltaX = inputService:GetMouseLocation().X - startMouseX
             local percent = deltaX / barWidth
             local rawValue = startValue + percent * (args.max - args.min)
@@ -1693,30 +1718,22 @@ function group:addSlider(args, sub)
             local value = math.max(args.min, math.min(args.max, stepped))
             updateValue(value)
         end
-        if scrolling and not entered then
-            valuetext.TextColor3 = Color3.fromRGB(255,255,255)
-        end
-        if not menu.Enabled then
-            entered = false
-        end
-        scrolling = false
         library.scrolling = false
-    end
+        scrolling = false
+        main.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        entered = false
+    end)
 
     button.MouseEnter:connect(function()
-        if library.colorpicking then return end
-        if scrolling or entered then return end
-        entered = true
-        main.BorderColor3 = library.libColor
-        while entered do 
-            wait()
-            updateScroll()
+        if not scrolling then
+            main.BorderColor3 = library.libColor
         end
     end)
 
     button.MouseLeave:connect(function()
-        entered = false
-        main.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        if not scrolling then
+            main.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        end
     end)
 
     library.options[args.flag] = {type = "slider", changeState = updateValue, skipflag = args.skipflag, oldargs = args}
