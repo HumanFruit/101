@@ -27,7 +27,7 @@ local library = {
     scrolling = false;
     multiZindex = 200;
     toInvis = {};
-    libColor = Color3.fromRGB(255, 255, 255);
+    libColor = Color3.fromRGB(226, 139, 0);
     disabledcolor = Color3.fromRGB(233, 0, 0);
     blacklisted = {
         Enum.KeyCode.W,
@@ -46,10 +46,6 @@ local library = {
     keybindsWindow = nil;
     configBoxSelectedText = nil;
 }
-
-if game.GameId == 4777055365 then
-    library.gamename = "rost"
-end
 
 if not isfolder(library.cheatname) then
     makefolder(library.cheatname)
