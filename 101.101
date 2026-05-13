@@ -3548,7 +3548,7 @@ uisettings:addColorpicker({
     text = "Menu Accent", 
     ontop = true, 
     flag = "menuaccent", 
-    color = Color3.new(226, 139, 0), 
+    color = Color3.new(0.874509, 0.588235, 0.164705),
     callback = function(v)
         library:updateLibColor(v)
     end
